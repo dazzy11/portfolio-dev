@@ -5,23 +5,43 @@ import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js"
 
-// Classic face colors — rendered as metallic lacquer stickers.
+// Anodized-metal face palette (classic Rubik's colors, metal finishes)
 const FACE_COLORS = {
-  right: "#c41e3a", // R — red
-  left: "#ff5800", // L — orange
-  up: "#f4f4f6", // U — white
-  down: "#ffd500", // D — yellow
-  front: "#009e60", // F — green
-  back: "#0051ba", // B — blue
+  right: "#b8202e", // R — anodized red
+  left: "#cf6a28", // L — copper orange
+  up: "#e8e8ec", // U — chrome silver
+  down: "#e6b830", // D — gold
+  front: "#0e8a4d", // F — anodized green
+  back: "#1257c4", // B — anodized blue
 } as const
 
-const CUBELET = 0.96
+const CUBELET = 0.94
 const SPACING = 1.0
-const STICKER = 0.8
-const STICKER_DEPTH = 0.06
+const STICKER = 0.78
+const STICKER_DEPTH = 0.07
 
-/** Realistic metallic Rubik's cube: auto-spins, drag (mouse/touch) to rotate
- *  on all axes with inertia — same interaction model as the glass cube. */
+/** Fine grayscale noise → roughness map. Gives the metal micro-variation so
+ *  reflections shimmer like real machined metal instead of perfect CG. */
+function makeNoiseTexture(size = 256, base = 185, range = 70): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas")
+  canvas.width = canvas.height = size
+  const ctx = canvas.getContext("2d")!
+  const image = ctx.createImageData(size, size)
+  for (let i = 0; i < image.data.length; i += 4) {
+    const v = base + Math.random() * range
+    image.data[i] = image.data[i + 1] = image.data[i + 2] = v
+    image.data[i + 3] = 255
+  }
+  ctx.putImageData(image, 0, 0)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(2, 2)
+  return texture
+}
+
+/** Hyperrealistic metallic Rubik's cube: 27 machined cubelets, anodized
+ *  metal tiles, studio reflections, soft cast shadow. Auto-spins; drag to
+ *  rotate on all axes with inertia. */
 export default function RubiksCube({ className = "" }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -35,7 +55,9 @@ export default function RubiksCube({ className = "" }: { className?: string }) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.1
+    renderer.toneMappingExposure = 1.15
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     container.appendChild(renderer.domElement)
     renderer.domElement.style.width = "100%"
     renderer.domElement.style.height = "100%"
@@ -44,44 +66,66 @@ export default function RubiksCube({ className = "" }: { className?: string }) {
 
     const scene = new THREE.Scene()
 
-    // Studio reflections — this is what sells the metallic look. Generated
-    // procedurally (RoomEnvironment), so no network fetch is involved.
+    // Studio reflections (procedural, no network) — the core of the metal look
     const pmrem = new THREE.PMREMGenerator(renderer)
     const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
     scene.environment = envTexture
 
+    // Camera sits slightly above so the ground shadow reads
     const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 50)
-    camera.position.set(0, 0, 8)
+    camera.position.set(0, 1.4, 8.2)
+    camera.lookAt(0, -0.2, 0)
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.6)
-    keyLight.position.set(4, 6, 6)
+    // Key light casts the shadow; violet rim ties into the site accent
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.1)
+    keyLight.position.set(4, 7, 5)
+    keyLight.castShadow = true
+    keyLight.shadow.mapSize.set(2048, 2048)
+    keyLight.shadow.camera.near = 1
+    keyLight.shadow.camera.far = 25
+    keyLight.shadow.camera.left = -6
+    keyLight.shadow.camera.right = 6
+    keyLight.shadow.camera.top = 6
+    keyLight.shadow.camera.bottom = -6
+    keyLight.shadow.radius = 6
+    keyLight.shadow.bias = -0.0004
     scene.add(keyLight)
-    const rimLight = new THREE.DirectionalLight(0x9a86ff, 0.35)
-    rimLight.position.set(-5, -3, -4)
+
+    const rimLight = new THREE.DirectionalLight(0x7c5cff, 1.1)
+    rimLight.position.set(-6, -1, -5)
     scene.add(rimLight)
 
-    // Shared geometries/materials across all 27 cubelets
-    const bodyGeometry = new RoundedBoxGeometry(CUBELET, CUBELET, CUBELET, 4, 0.09)
-    const stickerGeometry = new RoundedBoxGeometry(STICKER, STICKER, STICKER_DEPTH, 3, 0.03)
-    const bodyMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0a0a0e,
-      metalness: 0.9,
-      roughness: 0.35,
+    const noise = makeNoiseTexture()
+
+    // Machined gunmetal body
+    const bodyGeometry = new RoundedBoxGeometry(CUBELET, CUBELET, CUBELET, 5, 0.1)
+    const bodyMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x15151b,
+      metalness: 1,
+      roughness: 0.32,
+      roughnessMap: noise,
+      clearcoat: 0.3,
+      clearcoatRoughness: 0.25,
+      envMapIntensity: 1.1,
     })
+
+    // Anodized metal tiles
+    const stickerGeometry = new RoundedBoxGeometry(STICKER, STICKER, STICKER_DEPTH, 4, 0.035)
     const stickerMaterials = Object.fromEntries(
       Object.entries(FACE_COLORS).map(([face, color]) => [
         face,
         new THREE.MeshPhysicalMaterial({
           color,
-          metalness: 0.85,
-          roughness: 0.16,
-          clearcoat: 1,
+          metalness: 1,
+          roughness: 0.2,
+          roughnessMap: noise,
+          clearcoat: 0.9,
           clearcoatRoughness: 0.12,
+          envMapIntensity: 1.25,
         }),
       ])
     ) as Record<keyof typeof FACE_COLORS, THREE.MeshPhysicalMaterial>
 
-    // Sticker placement per outward face: [face, axis, sign, rotation]
     const faceDefs: Array<{
       face: keyof typeof FACE_COLORS
       position: [number, number, number]
@@ -102,20 +146,32 @@ export default function RubiksCube({ className = "" }: { className?: string }) {
         for (let z = -1; z <= 1; z++) {
           const cubelet = new THREE.Mesh(bodyGeometry, bodyMaterial)
           cubelet.position.set(x * SPACING, y * SPACING, z * SPACING)
+          cubelet.castShadow = true
 
           for (const def of faceDefs) {
             if (!def.show(x, y, z)) continue
             const sticker = new THREE.Mesh(stickerGeometry, stickerMaterials[def.face])
             sticker.position.set(...def.position)
             sticker.rotation.set(...def.rotation)
+            sticker.castShadow = true
             cubelet.add(sticker)
           }
           cube.add(cubelet)
         }
       }
     }
-    cube.rotation.set(0.45, -0.65, 0)
+    cube.rotation.set(0.42, -0.65, 0)
     scene.add(cube)
+
+    // Invisible ground that only renders the cube's soft shadow
+    const shadowPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(30, 30),
+      new THREE.ShadowMaterial({ opacity: 0.38 })
+    )
+    shadowPlane.rotation.x = -Math.PI / 2
+    shadowPlane.position.y = -3.1
+    shadowPlane.receiveShadow = true
+    scene.add(shadowPlane)
 
     function resize() {
       if (!container) return
@@ -129,7 +185,7 @@ export default function RubiksCube({ className = "" }: { className?: string }) {
     resize()
 
     // Drag to rotate, with inertia; drifts back to a lazy auto-spin when idle.
-    const AUTO = reduced ? { x: 0, y: 0 } : { x: 0.0014, y: 0.003 }
+    const AUTO = reduced ? { x: 0, y: 0 } : { x: 0.0013, y: 0.0028 }
     const velocity = { x: AUTO.x, y: AUTO.y }
     let dragging = false
     let last = { x: 0, y: 0 }
@@ -162,14 +218,20 @@ export default function RubiksCube({ className = "" }: { className?: string }) {
     el.addEventListener("pointercancel", onPointerUp)
 
     let raf = 0
+    const clock = new THREE.Clock()
     const loop = () => {
       raf = requestAnimationFrame(loop)
+      const t = clock.getElapsedTime()
+
       if (!dragging) {
         velocity.x += (AUTO.x - velocity.x) * 0.02
         velocity.y += (AUTO.y - velocity.y) * 0.02
         cube.rotation.x += velocity.x
         cube.rotation.y += velocity.y
       }
+      // Gentle hover — makes the cast shadow breathe
+      if (!reduced) cube.position.y = Math.sin(t * 0.8) * 0.12
+
       renderer.render(scene, camera)
     }
     raf = requestAnimationFrame(loop)
@@ -186,6 +248,9 @@ export default function RubiksCube({ className = "" }: { className?: string }) {
       stickerGeometry.dispose()
       bodyMaterial.dispose()
       Object.values(stickerMaterials).forEach((m) => m.dispose())
+      shadowPlane.geometry.dispose()
+      ;(shadowPlane.material as THREE.Material).dispose()
+      noise.dispose()
       envTexture.dispose()
       pmrem.dispose()
       renderer.dispose()
@@ -196,7 +261,7 @@ export default function RubiksCube({ className = "" }: { className?: string }) {
     <div
       ref={containerRef}
       data-cursor
-      aria-label="Interactive 3D Rubik's cube — drag to rotate"
+      aria-label="Interactive metallic Rubik's cube — drag to rotate"
       role="img"
       className={`h-full w-full ${className}`}
     />

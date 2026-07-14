@@ -13,9 +13,9 @@ import { introPlaying } from "@/components/ultra/preloader"
 import { profile } from "@/data/profile"
 
 // Other hero cube variants live in components/bits/ — glass
-// (InteractiveCube.tsx) and Rubik's (RubiksCube.tsx). Swap the import to
-// switch versions.
-const MetallicCube = dynamic(() => import("@/components/bits/MetallicCube"), {
+// (InteractiveCube.tsx) and solid metal (MetallicCube.tsx). Swap the import
+// to switch versions.
+const RubiksCube = dynamic(() => import("@/components/bits/RubiksCube"), {
   ssr: false,
 })
 
@@ -115,12 +115,12 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Interactive metallic cube — drag to rotate */}
+        {/* Interactive metallic Rubik's cube — drag to rotate */}
         <div
           data-hero-cube
           className="mx-auto h-64 w-full max-w-sm sm:h-80 sm:max-w-md lg:h-[30rem] lg:max-w-none"
         >
-          <MetallicCube />
+          <RubiksCube />
         </div>
       </div>
 
