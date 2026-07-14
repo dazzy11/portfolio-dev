@@ -1,0 +1,211 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(0.985 0.002 285);
+  --foreground: oklch(0.16 0.015 285);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.015 285);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.015 285);
+  --primary: oklch(0.55 0.24 285);
+  --primary-foreground: oklch(0.985 0.002 285);
+  --secondary: oklch(0.955 0.005 285);
+  --secondary-foreground: oklch(0.2 0.02 285);
+  --muted: oklch(0.955 0.005 285);
+  --muted-foreground: oklch(0.5 0.015 285);
+  --accent: oklch(0.94 0.02 285);
+  --accent-foreground: oklch(0.2 0.02 285);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.9 0.005 285);
+  --input: oklch(0.9 0.005 285);
+  --ring: oklch(0.55 0.24 285);
+}
+
+.dark {
+  --background: oklch(0.145 0.012 285);
+  --foreground: oklch(0.95 0.005 285);
+  --card: oklch(0.185 0.015 285);
+  --card-foreground: oklch(0.95 0.005 285);
+  --popover: oklch(0.185 0.015 285);
+  --popover-foreground: oklch(0.95 0.005 285);
+  --primary: oklch(0.68 0.2 285);
+  --primary-foreground: oklch(0.13 0.012 285);
+  --secondary: oklch(0.24 0.02 285);
+  --secondary-foreground: oklch(0.95 0.005 285);
+  --muted: oklch(0.22 0.015 285);
+  --muted-foreground: oklch(0.68 0.01 285);
+  --accent: oklch(0.26 0.03 285);
+  --accent-foreground: oklch(0.95 0.005 285);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.68 0.2 285);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  ::selection {
+    @apply bg-primary/30;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .section-padding {
+    @apply px-6 py-24 sm:px-10 md:py-32 lg:px-16 2xl:px-24;
+  }
+
+  /* Fluid display type — scales smoothly from 360px to ultrawide */
+  .text-fluid-hero {
+    font-size: clamp(2.75rem, 1rem + 8.5vw, 7.5rem);
+    line-height: 1.02;
+  }
+  .text-fluid-h2 {
+    font-size: clamp(1.9rem, 1rem + 3.2vw, 3.6rem);
+    line-height: 1.1;
+  }
+
+  /* Glass surface */
+  .glass {
+    background: color-mix(in oklab, var(--card) 55%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* Gradient glow border on hover (uses a masked pseudo-element) */
+  .glow-border {
+    position: relative;
+  }
+  .glow-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--primary) 80%, transparent),
+      transparent 40%,
+      transparent 60%,
+      color-mix(in oklab, var(--primary) 50%, transparent)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .glow-border:hover::before,
+  .glow-border:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Oversized ghost section numbers */
+  .ghost-number {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 10vw, 9rem);
+    line-height: 1;
+    font-weight: 600;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklab, var(--foreground) 14%, transparent);
+    user-select: none;
+  }
+}
+
+/* Skills marquee */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-left var(--marquee-duration, 30s) linear infinite;
+}
+.marquee-track[data-direction="right"] {
+  animation-name: marquee-right;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Lenis smooth scroll — native smooth behavior must yield to it */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis {
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Hide native cursor when the custom cursor is active (desktop, fine pointers) */
+@media (pointer: fine) {
+  html.custom-cursor,
+  html.custom-cursor a,
+  html.custom-cursor button,
+  html.custom-cursor [role="button"] {
+    cursor: none;
+  }
+}
