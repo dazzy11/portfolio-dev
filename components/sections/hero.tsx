@@ -1,23 +1,16 @@
 "use client"
 
 import { useRef } from "react"
-import dynamic from "next/dynamic"
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
 import { ArrowDown, ArrowRight, FileDown } from "lucide-react"
-import { AuroraBackground } from "@/components/bits/AuroraBackground"
+import { HyperspeedBackground } from "@/components/bits/HyperspeedBackground"
+import GlassSurface from "@/components/bits/GlassSurface"
 import Magnet from "@/components/bits/Magnet"
 import ShinyText from "@/components/bits/ShinyText"
 import { Button } from "@/components/ui/button"
 import { introPlaying } from "@/components/ultra/preloader"
 import { profile } from "@/data/profile"
-
-// Other hero cube variants live in components/bits/ — glass
-// (InteractiveCube.tsx) and solid metal (MetallicCube.tsx). Swap the import
-// to switch versions.
-const RubiksCube = dynamic(() => import("@/components/bits/RubiksCube"), {
-  ssr: false,
-})
 
 gsap.registerPlugin(useGSAP)
 
@@ -46,7 +39,6 @@ export function Hero() {
           { y: 16, opacity: 0, duration: 0.6, stagger: 0.08 },
           0.9
         )
-        .from("[data-hero-cube]", { opacity: 0, scale: 0.92, duration: 1.1 }, 0.6)
         .from("[data-hero-scroll]", { opacity: 0, duration: 0.8 }, 1.3)
     },
     { scope }
@@ -56,72 +48,74 @@ export function Hero() {
     <section
       ref={scope}
       id="home"
-      className="relative flex min-h-svh flex-col justify-center overflow-hidden px-6 sm:px-10"
+      className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-6 text-center"
     >
-      <AuroraBackground />
+      <HyperspeedBackground />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-8 pt-24 pb-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-4 lg:pt-16">
-        {/* Copy */}
-        <div className="text-center lg:text-left">
-          <p
-            data-hero-eyebrow
-            className="mb-6 font-mono text-sm tracking-widest text-primary uppercase"
-          >
-            {profile.role}
-          </p>
-
-          <h1 className="font-display text-fluid-hero font-semibold tracking-tight text-balance">
-            <span className="block overflow-hidden">
-              <span data-hero-line className="block">
-                Hey, I&apos;m
-              </span>
-            </span>
-            <span className="block overflow-hidden">
-              <span data-hero-line className="block text-primary">
-                {profile.firstName}.
-              </span>
-            </span>
-          </h1>
-
-          <div data-hero-tagline className="mx-auto mt-6 max-w-xl lg:mx-0">
-            <ShinyText
-              text={profile.tagline}
-              speed={3}
-              className="text-lg sm:text-xl"
-              color="var(--muted-foreground)"
-              shineColor="var(--foreground)"
-            />
-          </div>
-
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-            <span data-hero-cta>
-              <Magnet padding={60} magnetStrength={8}>
-                <Button asChild size="lg">
-                  <a href="#projects">
-                    View my work
-                    <ArrowRight className="size-4" />
-                  </a>
-                </Button>
-              </Magnet>
-            </span>
-            <span data-hero-cta>
-              <Button asChild size="lg" variant="outline">
-                <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
-                  <FileDown className="size-4" />
-                  Download resume
-                </a>
-              </Button>
-            </span>
-          </div>
-        </div>
-
-        {/* Interactive metallic Rubik's cube — drag to rotate */}
-        <div
-          data-hero-cube
-          className="mx-auto h-64 w-full max-w-sm sm:h-80 sm:max-w-md lg:h-[30rem] lg:max-w-none"
+      <div className="pointer-events-none relative z-10 mx-auto max-w-4xl">
+        <p
+          data-hero-eyebrow
+          className="mb-6 font-mono text-sm tracking-widest text-primary uppercase"
         >
-          <RubiksCube />
+          {profile.role}
+        </p>
+
+        <h1 className="font-display text-fluid-hero font-semibold tracking-tight text-balance">
+          <span className="block overflow-hidden">
+            <span data-hero-line className="block">
+              Hey, I&apos;m
+            </span>
+          </span>
+          <span className="block overflow-hidden">
+            <span data-hero-line className="block text-primary">
+              {profile.firstName}.
+            </span>
+          </span>
+        </h1>
+
+        <div data-hero-tagline className="mx-auto mt-6 max-w-xl">
+          <ShinyText
+            text={profile.tagline}
+            speed={3}
+            className="text-lg sm:text-xl"
+            color="var(--muted-foreground)"
+            shineColor="var(--foreground)"
+          />
         </div>
+
+        <div className="pointer-events-auto mt-10 flex flex-wrap items-center justify-center gap-4">
+          <span data-hero-cta>
+            <Magnet padding={60} magnetStrength={8}>
+              <GlassSurface
+                width="fit-content"
+                height={52}
+                borderRadius={26}
+                brightness={60}
+                opacity={0.9}
+              >
+                <a
+                  href="#projects"
+                  className="flex items-center gap-2 px-5 text-sm font-medium whitespace-nowrap"
+                >
+                  View my work
+                  <ArrowRight className="size-4" />
+                </a>
+              </GlassSurface>
+            </Magnet>
+          </span>
+          <span data-hero-cta>
+            <Button asChild size="lg" variant="outline">
+              <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
+                <FileDown className="size-4" />
+                Download resume
+              </a>
+            </Button>
+          </span>
+        </div>
+
+        <p className="pointer-events-none mt-6 font-mono text-xs text-muted-foreground/60">
+          psst — click &amp; hold the road to speed up
+        </p>
       </div>
 
       <a

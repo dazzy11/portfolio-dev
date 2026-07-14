@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"
 import { Providers } from "@/components/providers"
 import { SmoothScroll } from "@/components/ultra/smooth-scroll"
 import { Cursor } from "@/components/ultra/cursor"
+import { PageBlur } from "@/components/ultra/page-blur"
 import { CommandPalette } from "@/components/command-palette"
 import { Terminal } from "@/components/terminal"
 import { ChatWidget } from "@/components/chat-widget"
@@ -78,6 +79,7 @@ export default function RootLayout({
         <Providers>
           <SmoothScroll />
           <Cursor />
+          <PageBlur />
           {children}
           <CommandPalette />
           <Terminal />
