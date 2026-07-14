@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"
 import { Providers } from "@/components/providers"
 import { SmoothScroll } from "@/components/ultra/smooth-scroll"
 import { Cursor } from "@/components/ultra/cursor"
-import { PageBlur } from "@/components/ultra/page-blur"
 import { CommandPalette } from "@/components/command-palette"
 import { Terminal } from "@/components/terminal"
 import { ChatWidget } from "@/components/chat-widget"
@@ -68,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} font-sans antialiased`}
       >
@@ -79,7 +78,6 @@ export default function RootLayout({
         <Providers>
           <SmoothScroll />
           <Cursor />
-          <PageBlur />
           {children}
           <CommandPalette />
           <Terminal />

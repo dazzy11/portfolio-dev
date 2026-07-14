@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useTheme } from "next-themes"
 import { toast } from "sonner"
 import {
   Copy,
@@ -11,9 +10,7 @@ import {
   Github,
   Linkedin,
   MessageCircle,
-  Moon,
   SquareTerminal,
-  Sun,
 } from "lucide-react"
 import {
   CommandDialog,
@@ -33,7 +30,6 @@ import { site } from "@/data/site"
 export function CommandPalette() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const { resolvedTheme, setTheme } = useTheme()
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -119,14 +115,6 @@ export function CommandPalette() {
           >
             <FileDown />
             Download resume
-          </CommandItem>
-          <CommandItem
-            onSelect={() =>
-              run(() => setTheme(resolvedTheme === "dark" ? "light" : "dark"))
-            }
-          >
-            {resolvedTheme === "dark" ? <Sun /> : <Moon />}
-            Toggle theme
           </CommandItem>
         </CommandGroup>
 

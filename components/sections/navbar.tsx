@@ -15,7 +15,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { openPalette } from "@/lib/events"
 
 export function Navbar() {
@@ -80,7 +79,6 @@ export function Navbar() {
             <Command className="size-3.5" />
             <kbd className="font-mono text-xs">K</kbd>
           </Button>
-          <ThemeToggle />
           <Button asChild size="sm" variant="outline" className="hidden sm:inline-flex">
             <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
               <FileDown className="size-4" />

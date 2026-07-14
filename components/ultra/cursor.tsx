@@ -23,10 +23,11 @@ export function Cursor() {
     document.documentElement.classList.add("custom-cursor")
     gsap.set([dot, ring], { xPercent: -50, yPercent: -50 })
 
-    const dotX = gsap.quickTo(dot, "x", { duration: 0.08, ease: "power2.out" })
-    const dotY = gsap.quickTo(dot, "y", { duration: 0.08, ease: "power2.out" })
-    const ringX = gsap.quickTo(ring, "x", { duration: 0.35, ease: "power3.out" })
-    const ringY = gsap.quickTo(ring, "y", { duration: 0.35, ease: "power3.out" })
+    // Snappy: dot is glued to the pointer (no easing), ring follows tight.
+    const dotX = gsap.quickSetter(dot, "x", "px")
+    const dotY = gsap.quickSetter(dot, "y", "px")
+    const ringX = gsap.quickTo(ring, "x", { duration: 0.1, ease: "power3.out" })
+    const ringY = gsap.quickTo(ring, "y", { duration: 0.1, ease: "power3.out" })
 
     const onMove = (e: MouseEvent) => {
       dotX(e.clientX)
@@ -36,13 +37,14 @@ export function Cursor() {
 
       const interactive = (e.target as HTMLElement).closest?.(INTERACTIVE)
       gsap.to(ring, {
-        scale: interactive ? 2.2 : 1,
+        scale: interactive ? 1.9 : 1,
         opacity: interactive ? 0.9 : 0.5,
-        duration: 0.3,
+        duration: 0.15,
+        overwrite: "auto",
       })
     }
-    const onDown = () => gsap.to(ring, { scale: 0.8, duration: 0.15 })
-    const onUp = () => gsap.to(ring, { scale: 1, duration: 0.25 })
+    const onDown = () => gsap.to(ring, { scale: 0.75, duration: 0.1 })
+    const onUp = () => gsap.to(ring, { scale: 1, duration: 0.15 })
     const onLeave = () => gsap.to([dot, ring], { opacity: 0, duration: 0.2 })
     const onEnter = () => {
       gsap.to(dot, { opacity: 1, duration: 0.2 })

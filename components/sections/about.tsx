@@ -1,6 +1,7 @@
 import { Github, Linkedin, MapPin, Sparkles } from "lucide-react"
 import { SectionHeading } from "@/components/section-heading"
 import { Reveal } from "@/components/reveal"
+import ScrollReveal from "@/components/bits/ScrollReveal"
 import { profile } from "@/data/profile"
 
 export function About() {
@@ -9,12 +10,19 @@ export function About() {
       <SectionHeading number="01" eyebrow="About" title="A little about me" />
 
       <div className="grid gap-4 md:grid-cols-4 md:grid-rows-[auto_auto]">
-        {/* Bio — the anchor tile */}
+        {/* Bio — the anchor tile, revealed word by word on scroll */}
         <Reveal className="md:col-span-2 md:row-span-2">
           <div className="glass glow-border h-full rounded-xl border border-border/60 p-8">
-            <p className="text-lg leading-relaxed text-muted-foreground">
+            <ScrollReveal
+              enableBlur
+              blurStrength={6}
+              baseOpacity={0.12}
+              baseRotation={2}
+              containerClassName="my-0!"
+              textClassName="text-[clamp(1.1rem,1.5vw,1.45rem)]! leading-relaxed! font-medium!"
+            >
               {profile.bio}
-            </p>
+            </ScrollReveal>
           </div>
         </Reveal>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
 import { ArrowDown, ArrowRight, FileDown } from "lucide-react"
@@ -8,6 +8,7 @@ import { HyperspeedBackground } from "@/components/bits/HyperspeedBackground"
 import GlassSurface from "@/components/bits/GlassSurface"
 import Magnet from "@/components/bits/Magnet"
 import ShinyText from "@/components/bits/ShinyText"
+import Shuffle from "@/components/bits/Shuffle"
 import { Button } from "@/components/ui/button"
 import { introPlaying } from "@/components/ultra/preloader"
 import { profile } from "@/data/profile"
@@ -16,6 +17,14 @@ gsap.registerPlugin(useGSAP)
 
 export function Hero() {
   const scope = useRef<HTMLElement>(null)
+  // Mount the shuffle headline only after the preloader veil lifts, so the
+  // scramble isn't wasted behind it on first visit.
+  const [titleReady, setTitleReady] = useState(false)
+
+  useEffect(() => {
+    const t = setTimeout(() => setTitleReady(true), introPlaying() ? 1800 : 150)
+    return () => clearTimeout(t)
+  }, [])
 
   useGSAP(
     () => {
@@ -28,11 +37,6 @@ export function Hero() {
           defaults: { ease: "power3.out" },
         })
         .from("[data-hero-eyebrow]", { y: 24, opacity: 0, duration: 0.7 }, 0.1)
-        .from(
-          "[data-hero-line]",
-          { yPercent: 110, opacity: 0, duration: 0.9, stagger: 0.12 },
-          0.25
-        )
         .from("[data-hero-tagline]", { y: 20, opacity: 0, duration: 0.7 }, 0.7)
         .from(
           "[data-hero-cta]",
@@ -61,16 +65,36 @@ export function Hero() {
         </p>
 
         <h1 className="font-display text-fluid-hero font-semibold tracking-tight text-balance">
-          <span className="block overflow-hidden">
-            <span data-hero-line className="block">
-              Hey, I&apos;m
-            </span>
-          </span>
-          <span className="block overflow-hidden">
-            <span data-hero-line className="block text-primary">
-              {profile.firstName}.
-            </span>
-          </span>
+          {titleReady ? (
+            <>
+              <Shuffle
+                text="Hey, I'm"
+                tag="span"
+                className="block"
+                duration={0.4}
+                shuffleTimes={2}
+                stagger={0.02}
+                triggerOnce
+                respectReducedMotion
+              />
+              <Shuffle
+                text={`${profile.firstName}.`}
+                tag="span"
+                className="block text-primary"
+                duration={0.45}
+                shuffleTimes={3}
+                stagger={0.04}
+                triggerOnce
+                respectReducedMotion
+              />
+            </>
+          ) : (
+            // Invisible placeholder reserves the exact space (no layout shift)
+            <>
+              <span className="block opacity-0">Hey, I&apos;m</span>
+              <span className="block opacity-0">{profile.firstName}.</span>
+            </>
+          )}
         </h1>
 
         <div data-hero-tagline className="mx-auto mt-6 max-w-xl">
