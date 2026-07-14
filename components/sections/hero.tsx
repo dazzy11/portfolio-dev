@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button"
 import { introPlaying } from "@/components/ultra/preloader"
 import { profile } from "@/data/profile"
 
-const InteractiveCube = dynamic(() => import("@/components/bits/InteractiveCube"), {
+// Glass-cube variant is preserved at components/bits/InteractiveCube.tsx —
+// swap the import back to switch versions.
+const RubiksCube = dynamic(() => import("@/components/bits/RubiksCube"), {
   ssr: false,
 })
 
@@ -112,12 +114,12 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Interactive cube — drag to rotate */}
+        {/* Interactive Rubik's cube — drag to rotate */}
         <div
           data-hero-cube
           className="mx-auto h-64 w-full max-w-sm sm:h-80 sm:max-w-md lg:h-[30rem] lg:max-w-none"
         >
-          <InteractiveCube color="#7c5cff" edgeColor="#e9e6ff" />
+          <RubiksCube />
         </div>
       </div>
 
