@@ -16,6 +16,7 @@ const eslintConfig = [
     files: ["components/bits/**"],
     rules: {
       "prefer-const": "off",
+      "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "react-hooks/exhaustive-deps": "off",
     },
