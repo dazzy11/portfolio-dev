@@ -68,7 +68,7 @@
   --color-ring: var(--ring);
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-space-grotesk), var(--font-geist-sans), sans-serif;
+  --font-display: var(--font-outfit), var(--font-space-grotesk), var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -101,14 +101,28 @@
   .font-display {
     font-family: var(--font-display);
   }
+  /* Hero headline — Anton ships a single (heavy) weight; forcing 800 would
+     trigger ugly synthetic bolding, so pin it to 400. */
+  .font-headline {
+    font-family: var(--font-anton), var(--font-outfit), sans-serif;
+    font-weight: 400;
+  }
+  /* Fiery gradient text */
+  .text-fire {
+    background: linear-gradient(180deg, #fbbf24 0%, #f97316 45%, #dc2626 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
   .section-padding {
     @apply px-6 py-24 sm:px-10 md:py-32 lg:px-16 2xl:px-24;
   }
 
   /* Fluid display type — scales smoothly from 360px to ultrawide */
   .text-fluid-hero {
-    font-size: clamp(2.75rem, 1rem + 8.5vw, 7.5rem);
+    font-size: clamp(4.5rem, 1rem + 14vw, 14rem);
     line-height: 1.02;
+    font-weight: 800;
   }
   .text-fluid-h2 {
     font-size: clamp(1.9rem, 1rem + 3.2vw, 3.6rem);

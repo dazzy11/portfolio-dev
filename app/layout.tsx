@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"
+import { Geist, Geist_Mono, Space_Grotesk, Outfit, Anton } from "next/font/google"
 import { Providers } from "@/components/providers"
 import { SmoothScroll } from "@/components/ultra/smooth-scroll"
 import { Cursor } from "@/components/ultra/cursor"
@@ -23,6 +23,18 @@ const geistMono = Geist_Mono({
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
+})
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["700", "800"],
+})
+
+const anton = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: "400",
 })
 
 export const metadata: Metadata = {
@@ -69,7 +81,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${outfit.variable} ${anton.variable} font-sans antialiased`}
       >
         <script
           type="application/ld+json"

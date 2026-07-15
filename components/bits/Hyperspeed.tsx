@@ -1092,6 +1092,9 @@ class App {
   }
 
   init() {
+    // Assets load async — the component may have unmounted (and the WebGL
+    // context been destroyed) before this runs. Bail out instead of crashing.
+    if (this.disposed) return;
     this.initPasses();
     const options = this.options;
     this.road.init();
